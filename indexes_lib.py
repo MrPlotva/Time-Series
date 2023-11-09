@@ -190,11 +190,11 @@ class Tester:
     def add_test(self, data, cluster):
         calculator = MeasureIndexes(data, cluster)
         res = calculator.Calculate()
-        res["test id"] = len(self.results) + 1
+        res["id"] = len(self.results) + 1
         self.results.append(res)
 
     def display(self):
-        col_names = ["test id"] + index_list
+        col_names = ["id"] + index_list
         data = []
 
         for i in range(len(self.results)):

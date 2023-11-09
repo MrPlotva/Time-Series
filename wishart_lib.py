@@ -32,10 +32,7 @@ def volume(r, m):
 
 
 class Wishart:
-    radius: int
-    u: int
-
-    def __init__(self, r: int, u: int):
+    def __init__(self, r, u):
         self.radius = r
         self.u = u
 
