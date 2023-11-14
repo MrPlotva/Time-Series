@@ -5,7 +5,7 @@ from random import choice, random, randint
 
 
 class Generator:
-    def __init__(self, rad_frac_=4.0, lim_=40, cnt_=200, clusters_cnt_=5):
+    def __init__(self, rad_frac_=2.0, lim_=40, cnt_=200, clusters_cnt_=5):
         # generating 2D points for better visualisation
 
         self.rad_frac = rad_frac_
@@ -27,6 +27,11 @@ class Generator:
         s = r * random()
         x, y = c
         return x + s * math.cos(theta), y + s * math.sin(theta)
+
+    def rand_point_on_disk_side(self, c, r):
+        theta = 2 * math.pi * random()
+        x, y = c
+        return x + r * math.cos(theta), y + r * math.sin(theta)
 
     def rand_cluster(self, n, c, r):
         # return n random points inside disk with center = c and radius = r
@@ -52,7 +57,7 @@ class Generator:
 
     def rand_subcluster(self, n, c1, c2):
         # generate two subclusters n points each as points inside two disks with one point of intersection
-        r = self.dist_2d(c1, c2) / 2
+        r = self.dist_2d(c1, c2) / 2.3
         cluster1 = self.rand_cluster(n, c1, r)
         cluster2 = self.rand_cluster(n, c2, r)
         return cluster1, cluster2
@@ -63,7 +68,7 @@ class Generator:
         for _ in range(k):
             x1 = lim * random()
             y1 = lim * random()
-            x2, y2 = self.rand_point_in_disk((x1, y1), r * 2.0)
+            x2, y2 = self.rand_point_on_disk_side((x1, y1), r * 2.0)
             cluster1, cluster2 = self.rand_subcluster(n, (x1, y1), (x2, y2))
             clusters.extend(cluster1)
             clusters.extend(cluster2)
