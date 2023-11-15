@@ -26,7 +26,6 @@ def math_norm(x):
 
 def cleaning(data, cluster):
     # cleans all zeros!!
-    print("COMPRESSING")
     clean_data = []
     clean_cluster = []
     was = dict()
@@ -187,8 +186,8 @@ class MeasureIndexes:
 
     def Calculate(self):
         res = dict()
-        res["RS"] = self.RS()
-        res["G"] = self.G()
+        # res["RS"] = self.RS()
+        # res["G"] = self.G()
         res["CH"] = self.CH()
         res["D"] = self.D()
         res["S"] = self.S()
@@ -198,7 +197,7 @@ class MeasureIndexes:
         return res
 
 
-index_list = ["RS", "G", "CH", "D", "S", "DB", "XB"]
+index_list = ["CH", "D", "S", "DB", "XB"]
 
 
 class Tester:
@@ -211,6 +210,7 @@ class Tester:
         res["id"] = len(self.results) + 1
         self.results.append(res)
 
+
     def display(self):
         col_names = ["id"] + index_list
         data = []
@@ -219,4 +219,21 @@ class Tester:
             row = [round(self.results[i][key], 3) for key in col_names]
             data.append(row)
 
+        for i in range(1, len(data[0])):
+            max_val = data[0][i]
+            min_val = data[0][i]
+            for j in range(len(data)):
+                max_val = max(max_val, data[j][i])
+                min_val = min(max_val, data[j][i])
+
+            target_val = max_val
+            if col_names[i] == "DB" or col_names[i] == "XB":
+                target_val = min_val
+
+            for j in range(len(data)):
+                if target_val == data[j][i]:
+                    data[j][i] = '\033[36m' + str(data[j][i]) + '\033[0m'
+
+
         print(tabulate(data, headers=col_names))
+
