@@ -4,6 +4,7 @@ from scipy.special import gamma
 from collections import defaultdict
 from random import choice, random, randint
 
+
 def kth_element(arr, l: int, r: int, k: int):
     if r - l == 1:
         return arr[l]
@@ -54,23 +55,23 @@ class Wishart:
         label = 1
         w = np.full(n, 0)
         completed = {0: False}
-        vertices = []
+        vertices = set()
         for d, i in sorted(zip(dr, range(n))):
             neighbours = []
-            neighbours_w = []
+            neighbours_w = set()
             clusters = defaultdict(list)
             for j in vertices:
                 if dist[i][j] <= d:
                     neighbours.append(j)
-                    neighbours_w.append(w[j])
+                    neighbours_w.add(w[j])
                     clusters[w[j]].append(j)
-            vertices.append(i)
+            vertices.add(i)
             if len(neighbours) == 0:
                 w[i] = label
                 completed[label] = False
                 label += 1
             elif len(neighbours_w) == 1:
-                wj = min(neighbours_w)
+                wj = next(iter(neighbours_w))
                 if completed[wj]:
                     w[i] = 0
                 else:
@@ -89,13 +90,80 @@ class Wishart:
                         for v in clusters[wj]:
                             w[v] = 0
                 else:
-                    if len(significant_clusters) == 1:
+                    if len(significant_clusters):
                         c1 = next(iter(significant_clusters))
                     else:
-                        c1 = min(neighbours_w)
+                        c1 = next(iter(neighbours_w))
                     w[i] = c1
                     for wj in neighbours_w:
                         for v in clusters[wj]:
                             w[v] = c1
 
         return w
+    
+
+
+    def fit_with_visualization(self, x, step):
+        n = len(x)
+        m = len(x[0])
+        dist = squareform(pdist(x))
+        dr = []
+        # print(dist)
+        for i in range(n):
+            dr.append(get_kth_element(dist[i], self.radius - 1))
+
+        p = [self.radius / (volume(i, m) * n) for i in dr]
+        label = 1
+        w = np.full(n, 0)
+        completed = {0: False}
+        vertices = set()
+
+        shots_w = []
+        cnt = 0
+        for d, i in sorted(zip(dr, range(n))):
+            cnt += 1
+            if cnt % step == 0:
+                # print(w)
+                shots_w.append(w.copy())
+            neighbours = []
+            neighbours_w = set()
+            clusters = defaultdict(list)
+            for j in vertices:
+                if dist[i][j] <= d:
+                    neighbours.append(j)
+                    neighbours_w.add(w[j])
+                    clusters[w[j]].append(j)
+            vertices.add(i)
+            if len(neighbours) == 0:
+                w[i] = label
+                completed[label] = False
+                label += 1
+            elif len(neighbours_w) == 1:
+                wj = next(iter(neighbours_w))
+                if completed[wj]:
+                    w[i] = 0
+                else:
+                    w[i] = wj
+            else:
+                if all([completed[l] for l in neighbours_w]):
+                    w[i] = 0
+                    continue
+                significant_clusters = set(wj for wj in neighbours_w if self.significant(clusters[wj], p))
+                if len(significant_clusters) > 1:
+                    w[i] = 0
+                    for wj in neighbours_w:
+                        if wj in significant_clusters:
+                            completed[wj] = (wj != 0)
+                            continue
+                        for v in clusters[wj]:
+                            w[v] = 0
+                else:
+                    if len(significant_clusters):
+                        c1 = next(iter(significant_clusters))
+                    else:
+                        c1 = next(iter(neighbours_w))
+                    w[i] = c1
+                    for wj in neighbours_w:
+                        for v in clusters[wj]:
+                            w[v] = c1
+        return w, shots_w
