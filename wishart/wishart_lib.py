@@ -3,6 +3,7 @@ from scipy.spatial.distance import pdist, squareform
 from scipy.special import gamma
 from collections import defaultdict
 from random import choice, random, randint
+from itertools import product
 
 
 def kth_element(arr, l: int, r: int, k: int):
@@ -38,7 +39,7 @@ class Wishart:
         self.u = u
 
     def significant(self, cluster, p):
-        dif = [abs(p[i] - p[j]) for i, j in zip(cluster, cluster)]
+        dif = [abs(p[i] - p[j]) for i, j in product(cluster, cluster)]
         return max(dif) >= self.u
 
 
@@ -123,7 +124,6 @@ class Wishart:
         for d, i in sorted(zip(dr, range(n))):
             cnt += 1
             if cnt % step == 0:
-                # print(w)
                 shots_w.append(w.copy())
             neighbours = []
             neighbours_w = set()
