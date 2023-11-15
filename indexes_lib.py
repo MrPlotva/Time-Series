@@ -24,17 +24,35 @@ def math_norm(x):
     return np.sqrt((x @ x.T)[0, 0])
 
 
+def cleaning(data, cluster):
+    # cleans all zeros!!
+    print("COMPRESSING")
+    clean_data = []
+    clean_cluster = []
+    was = dict()
+    for i in range(data.shape[0]):
+        if cluster[i] == 0:
+            continue
+        if cluster[i] not in was:
+            was[cluster[i]] = len(was)
+        clean_data.append(data[i])
+        clean_cluster.append(was[cluster[i]])
+
+    return np.array(clean_data), clean_cluster
+
+
 class MeasureIndexes:
     def __init__(self, data, cluster):
+        data, cluster = cleaning(data, cluster)
         # data = data set, cluster[i] = cluster of i-th point
-        self.data = data                # data set
-        self.N = data.shape[0]          # number of object in data set
-        self.center = center(data)      # center of data set
-        self.cluster = cluster          # cluster[i] = cluster of i-th point
-        self.P = 0                      # ???
-        self.NC = max(cluster) + 1      # cnt clusters
+        self.data = data  # data set
+        self.N = data.shape[0]  # number of object in data set
+        self.center = center(data)  # center of data set
+        self.cluster = cluster  # cluster[i] = cluster of i-th point
+        self.P = 0  # ???
+        self.NC = max(cluster) + 1  # cnt clusters
 
-        self.C = []                     # C[i] - i-th cluster
+        self.C = []  # C[i] - i-th cluster
         for i in range(self.NC):
             self.C.append([])
         for i in range(self.N):
@@ -42,11 +60,11 @@ class MeasureIndexes:
         for i in range(self.NC):
             self.C[i] = np.array(self.C[i])
 
-        self.n = [0] * self.NC          # n[i] - len of i-th cluster
+        self.n = [0] * self.NC  # n[i] - len of i-th cluster
         for i in range(self.NC):
             self.n[i] = len(self.C[i])
 
-        self.c = [0] * self.NC          # c[i] - center of i-th cluster
+        self.c = [0] * self.NC  # c[i] - center of i-th cluster
         for i in range(self.NC):
             self.c[i] = center(self.C[i])
 
@@ -112,7 +130,8 @@ class MeasureIndexes:
                 ax = 0
                 for y in self.C[i]:
                     ax += dist(x, y)
-                ax /= self.n[i] - 1
+                if self.n[i] > 1:
+                    ax /= self.n[i] - 1
 
                 bx = 10 ** 20
                 for j in range(self.NC):
@@ -202,4 +221,3 @@ class Tester:
 
         print(tabulate(data, headers=col_names))
 
-#%%
