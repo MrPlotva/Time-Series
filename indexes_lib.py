@@ -27,14 +27,14 @@ def math_norm(x):
 class MeasureIndexes:
     def __init__(self, data, cluster):
         # data = data set, cluster[i] = cluster of i-th point
-        self.data = data              # data set
-        self.N = data.shape[0]     # number of object in data set
-        self.center = center(data) # center of data set
-        self.cluster = cluster     # cluster[i] = cluster of i-th point
-        self.P = 0                 # ???
-        self.NC = max(cluster) + 1 # cnt clusters
+        self.data = data                # data set
+        self.N = data.shape[0]          # number of object in data set
+        self.center = center(data)      # center of data set
+        self.cluster = cluster          # cluster[i] = cluster of i-th point
+        self.P = 0                      # ???
+        self.NC = max(cluster) + 1      # cnt clusters
 
-        self.C = []                # C[i] - i-th cluster
+        self.C = []                     # C[i] - i-th cluster
         for i in range(self.NC):
             self.C.append([])
         for i in range(self.N):
@@ -42,14 +42,13 @@ class MeasureIndexes:
         for i in range(self.NC):
             self.C[i] = np.array(self.C[i])
 
-        self.n = [0] * self.NC     # n[i] - len of i-th cluster
+        self.n = [0] * self.NC          # n[i] - len of i-th cluster
         for i in range(self.NC):
             self.n[i] = len(self.C[i])
 
-        self.c = [0] * self.NC     # c[i] - center of i-th cluster
+        self.c = [0] * self.NC          # c[i] - center of i-th cluster
         for i in range(self.NC):
             self.c[i] = center(self.C[i])
-
 
     def RS(self):
         s1 = 0
@@ -202,3 +201,5 @@ class Tester:
             data.append(row)
 
         print(tabulate(data, headers=col_names))
+
+#%%
