@@ -56,4 +56,3 @@ def GenerateAllMotifs(Kmax, L, t):
 
 # print(*GenPatterns(4, 10))
 
-print(GenerateAllMotifs(10, 3, 40))
