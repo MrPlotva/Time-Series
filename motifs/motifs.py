@@ -38,7 +38,6 @@ def GenPatterns(L, x):
 
 
 def GenerateAllMotifs(Kmax, L, t):
-  print(1020030)
   # Returns map [pattern, [motifs...]]
   patterns = []
   pattern = []
