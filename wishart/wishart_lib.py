@@ -40,6 +40,7 @@ class Wishart:
 
     def significant(self, cluster, p):
         dif = [abs(p[i] - p[j]) for i, j in product(cluster, cluster)]
+        # print(max(dif))
         return max(dif) >= self.u
 
 
@@ -149,7 +150,7 @@ class Wishart:
                     w[i] = 0
                     continue
                 significant_clusters = set(wj for wj in neighbours_w if self.significant(clusters[wj], p))
-                if len(significant_clusters) > 1:
+                if len(significant_clusters) > 1 or next(iter(neighbours_w)) == 0:
                     w[i] = 0
                     for wj in neighbours_w:
                         if wj in significant_clusters:

@@ -75,15 +75,20 @@ class Generator:
         return clusters
 
     # generating functions
-    def generate_with_noise(self, noise_percentage=5.0):
+    def generate_with_noise(self, noise_percentage=5.0, ret_points=False):
         num_of_clusters = self.clusters_cnt
         n = self.cnt / num_of_clusters
         r = self.lim / (self.rad_frac * num_of_clusters)
         clusters = self.rand_clusters(num_of_clusters, n, r, self.lim)
 
         noise_cnt = int(len(clusters) / 100.0 * noise_percentage)
+        noise_points = []
         for _ in range(noise_cnt):
-            clusters.append(self.rand_point_in_disk((self.lim / 2.0, self.lim / 2.0), self.lim / 2.0))
+            curp = self.rand_point_in_disk((self.lim / 2.0, self.lim / 2.0), self.lim / 2.0)
+            noise_points.append(curp)
+            clusters.append(curp)
+        if ret_points:
+            return clusters, noise_points
         return clusters
 
     def generate_with_density(self, density_multiplier=2.0):

@@ -137,3 +137,76 @@ class WishartClusterization(object):
                             w[j] = s
         self.labels_ = w
         return self.labels_
+    
+    def fit_with_visualization(self, x, step):
+        n = len(x)
+        if isinstance(x[0], list):
+            m = len(x[0])
+        else:
+            m = 1
+        dist = squareform(pdist(x))
+
+        dk = []
+        for i in range(n):
+            order = list(range(n))
+            nth_element(dist[i], order, self.k - 1)
+            dk.append(dist[i][order[self.k - 1]])
+
+        # print(dk)
+
+        p = [self.k / (volume(dk[i], m) * n) for i in range(n)]
+
+        w = np.full(n, 0)
+        completed = {0: False}
+        last = 1
+        vertices = set()
+        shots_w = []
+        cnt = 0
+        for d, i in sorted(zip(dk, range(n))):
+            cnt += 1
+            if i % step == 0:
+                shots_w.append(w)
+            neigh = set()
+            neigh_w = set()
+            clusters = defaultdict(list)
+            for j in vertices:
+                if dist[i][j] <= dk[i]:
+                    neigh.add(j)
+                    neigh_w.add(w[j])
+                    clusters[w[j]].append(j)
+
+            vertices.add(i)
+            if len(neigh) == 0:
+                w[i] = last
+                completed[last] = False
+                last += 1
+            elif len(neigh_w) == 1:
+                wj = next(iter(neigh_w))
+                if completed[wj]:
+                    w[i] = 0
+                else:
+                    w[i] = wj
+            else:
+                if all(completed[wj] for wj in neigh_w):
+                    w[i] = 0
+                    continue
+                significant_clusters = set(wj for wj in neigh_w if significant(clusters[wj], self.h, p))
+                if len(significant_clusters) > 1:
+                    w[i] = 0
+                    for wj in neigh_w:
+                        if wj in significant_clusters:
+                            completed[wj] = (wj != 0)
+                        else:
+                            for j in clusters[wj]:
+                                w[j] = 0
+                else:
+                    if len(significant_clusters) == 0:
+                        s = next(iter(neigh_w))
+                    else:
+                        s = next(iter(significant_clusters))
+                    w[i] = s
+                    for wj in neigh_w:
+                        for j in clusters[wj]:
+                            w[j] = s
+        self.labels_ = w
+        return self.labels_, shots_w
