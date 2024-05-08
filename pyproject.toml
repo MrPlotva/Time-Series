@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "time-series"
+version = "0.1.0"
+description = ""
+authors = ["MrPlotva <perovplaton@gmail.com>"]
+readme = "README.md"
+packages = [{include = "time_series"}]
+
+[tool.poetry.dependencies]
+python = "3.10.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
